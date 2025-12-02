@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Channels — Mini Team Chat</title>
+  <link rel="stylesheet" href="./css/style.css" />
+  <style>
+    /* Minimal layout tweaks for chat page */
+    .layout { display: grid; grid-template-columns: 280px 1fr 220px; gap: 12px; padding: 12px; }
+    .panel { background:#fff; border:1px solid #e6e6e6; border-radius:6px; padding:12px; min-height:60vh; }
+    .channel-item { display:flex; justify-content:space-between; align-items:center; padding:6px 4px; border-bottom:1px solid #f1f1f1; }
+    #messagesList { height:60vh; overflow:auto; background:#fafafa; padding:10px; border-radius:6px; }
+    .message-item { margin-bottom:10px; padding:8px; background:#fff; border-radius:6px; box-shadow:0 0 0 1px rgba(0,0,0,0.02); }
+    .message-meta { font-size:12px; color:#333; margin-bottom:6px; }
+    .message-text { font-size:14px; color:#222; }
+    .online-user { padding:4px 0; font-size:13px; }
+    .top-actions { display:flex; gap:8px; align-items:center; margin-bottom:8px; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <h1><a href="./index.html">Mini Team Chat</a></h1>
+    <div class="nav">
+      <button id="logoutBtn" class="btn small">Logout</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- Left: Channels -->
+    <aside class="panel" id="leftPanel">
+      <h3>Channels</h3>
+
+      <div id="channelList" style="margin-bottom:12px;">
+        <!-- Channel items appended here -->
+      </div>
+
+      <form id="createChannelForm" style="margin-top:8px;">
+        <input id="createChannelName" placeholder="New channel name" required style="width:100%;padding:8px;margin-bottom:8px;" />
+        <button class="btn" type="submit">Create Channel</button>
+      </form>
+    </aside>
+
+    <!-- Middle: Chat -->
+    <section class="panel" id="chatPanel">
+      <div class="top-actions">
+        <h2 id="channelTitle">Select a channel</h2>
+        <button id="loadOlderBtn" class="btn small">Load older</button>
+      </div>
+
+      <div id="messagesList"></div>
+
+      <form id="messageForm" style="margin-top:12px; display:flex; gap:8px;">
+        <input id="messageInput" type="text" placeholder="Write a message..." style="flex:1;padding:8px;" required />
+        <button class="btn" type="submit">Send</button>
+      </form>
+    </section>
+
+    <!-- Right: Online users -->
+    <aside class="panel" id="rightPanel">
+      <h3>Online</h3>
+      <div id="onlineUsers">
+        <!-- Online users appended here -->
+      </div>
+    </aside>
+  </main>
+
+  <footer class="footer" style="padding:12px;">
+    <small>Mini Team Chat • Demo</small>
+  </footer>
+
+  <!-- Socket.IO client -->
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
+  <!-- Config (BASE_URL) -->
+  <script type="module" src="./config.js"></script>
+
+  <!-- App modules -->
+  <script type="module" src="./js/api/authApi.js"></script>
+  <script type="module" src="./js/api/channelApi.js"></script>
+  <script type="module" src="./js/api/messageApi.js"></script>
+
+  <script type="module" src="./js/utils.js"></script>
+  <script type="module" src="./js/socket.js"></script>
+  <script type="module" src="./js/chat.js"></script>
+  <script type="module" src="./js/channels.js"></script>
+
+  <script type="module">
+    import { getToken, clearToken } from "/js/utils.js";
+    import { loadChannels, attachCreateChannelHandler } from "/js/channels.js";
+    import chat from "/js/chat.js";
+    import { createSocket } from "/js/socket.js";
+
+    // Wire logout
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      clearToken();
+      window.location.href = "/login.html";
+    });
+
+    // Initialize
+    (async function init() {
+      // Ensure user has token, otherwise redirect to login
+      const token = getToken();
+      if (!token) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      // Create socket for presence
+      createSocket();
+
+      // Load channels and attach handlers
+      await loadChannels();
+      attachCreateChannelHandler();
+
+      // Attach chat form handlers
+      chat.attachChatFormHandlers();
+    })();
+  </script>
+</body>
+</html>

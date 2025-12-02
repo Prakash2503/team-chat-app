@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sign up — Mini Team Chat</title>
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1><a href="./index.html">Mini Team Chat</a></h1>
+  </header>
+
+  <main class="auth-container">
+    <div class="card">
+      <h2>Create account</h2>
+      <!-- method+action as safety net: JS will prevent default and handle submission -->
+      <form id="signupForm" method="post" action="#">
+        <label for="signupUsername">Username</label>
+        <input id="signupUsername" name="username" type="text" required />
+
+        <label for="signupDisplayName">Display name</label>
+        <input id="signupDisplayName" name="displayName" type="text" />
+
+        <label for="signupPassword">Password</label>
+        <input id="signupPassword" name="password" type="password" required />
+
+        <button type="submit" class="btn">Sign up</button>
+      </form>
+
+      <p>
+        Already have an account?
+        <a href="./login.html">Log in</a>
+      </p>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <small>Demo app</small>
+  </footer>
+
+  <!-- Socket.IO client (global "io") -->
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
+  <!-- App config (BASE_URL) -->
+  <script type="module" src="./config.js"></script>
+
+  <!-- Core frontend modules (loaded as modules) -->
+  <script type="module" src="./js/signup.js"></script>
+</body>
+</html>

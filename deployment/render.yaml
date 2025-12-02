@@ -1,0 +1,56 @@
+# deployment/render.yaml
+# Render service manifest for the backend API
+services:
+  - type: web
+    name: "team-chat-backend"
+    env: node
+    region: oregon # change to your preferred Render region
+    plan: free
+    repo: "<GIT_REPO_URL>"          # e.g. https://github.com/yourorg/team-chat-app
+    branch: "<BRANCH>"              # e.g. main
+    buildCommand: "npm install && npm run build || true"
+    startCommand: "npm run start"   # adjust if your package.json uses "dev" or "start"
+    autoDeploy: true
+    disk: 1024
+    # health check
+    healthCheck:
+      path: "/"
+      protocol: http
+      interval: 10
+      timeout: 5
+      healthyThreshold: 2
+      unhealthyThreshold: 3
+
+    # env vars (you should create Render secrets and reference them here)
+    envVars:
+      - key: MONGO_URI
+        value: "mongodb+srv://<username>:<password>@<cluster>.mongodb.net/teamchat?retryWrites=true&w=majority"
+      - key: JWT_SECRET
+        value: "<YOUR_JWT_SECRET>"
+      - key: FRONTEND_URL
+        value: "https://<YOUR_FRONTEND_DOMAIN>" # e.g. https://my-frontend.vercel.app
+      - key: NODE_ENV
+        value: "production"
+      - key: PORT
+        value: "10000" # Render will map internal port; you can use 10000 or default
+
+    # Optionally add env var references to Render's Secret Store:
+    # Example (recommended): create secrets in Render dashboard and reference them:
+    # envVars:
+    #   - key: MONGO_URI
+    #     fromService:
+    #       secret: "MONGO_URI_SECRET_NAME"
+    #   - key: JWT_SECRET
+    #     fromService:
+    #       secret: "JWT_SECRET_SECRET_NAME"
+
+# Optionally define static site for frontend on Render (instead of Vercel)
+# staticSites:
+#   - name: "team-chat-frontend"
+#     repo: "<GIT_REPO_URL>"
+#     branch: "<BRANCH>"
+#     buildCommand: "echo 'no build (static)'"
+#     publishPath: "frontend"
+#     envVars:
+#       - key: BACKEND_URL
+#         value: "https://team-chat-backend.onrender.com"

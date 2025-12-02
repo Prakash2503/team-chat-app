@@ -1,0 +1,111 @@
+/* ===========================
+   CHAT PAGE STYLES
+=========================== */
+
+/* 3-column layout */
+.layout {
+  display: grid;
+  grid-template-columns: 260px 1fr 220px;
+  gap: 16px;
+  padding: 16px;
+}
+
+.panel {
+  background: white;
+  border-radius: var(--radius);
+  padding: 14px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  min-height: 70vh;
+}
+
+.panel h3, .panel h2 {
+  margin-top: 0;
+}
+
+/* ===========================
+   CHANNEL LIST
+=========================== */
+
+.channel-item {
+  padding: 8px;
+  border-bottom: 1px solid #f2f2f2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.channel-item .join-btn {
+  background: var(--primary);
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+/* ===========================
+   MESSAGES
+=========================== */
+
+#messagesList {
+  background: #fafafa;
+  border-radius: var(--radius);
+  padding: 10px;
+  height: 60vh;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+}
+
+.message-item {
+  background: white;
+  padding: 10px;
+  margin-bottom: 12px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.message-meta {
+  font-size: 12px;
+  margin-bottom: 4px;
+  color: #555;
+}
+
+.message-text {
+  font-size: 14px;
+}
+
+/* ===========================
+   ONLINE USERS
+=========================== */
+
+.online-user {
+  padding: 6px 0;
+  border-bottom: 1px solid #f3f3f3;
+  font-size: 14px;
+}
+
+.online-user:last-child {
+  border-bottom: none;
+}
+
+/* ===========================
+   MESSAGE FORM
+=========================== */
+
+#messageForm {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+#messageInput {
+  flex: 1;
+}
+
+/* ===========================
+   RESPONSIVE
+=========================== */
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}

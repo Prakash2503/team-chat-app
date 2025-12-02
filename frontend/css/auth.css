@@ -1,0 +1,32 @@
+/* ===========================
+   AUTH PAGES (login/signup)
+=========================== */
+
+.auth-container {
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.auth-container .card {
+  max-width: 420px;
+  width: 100%;
+}
+
+.auth-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.auth-container form input {
+  margin-bottom: 16px;
+}
+
+.auth-container p {
+  text-align: center;
+}
+
+.auth-container a {
+  color: var(--primary);
+  text-decoration: none;
+}

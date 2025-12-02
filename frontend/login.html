@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login — Mini Team Chat</title>
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1><a href="./index.html">Mini Team Chat</a></h1>
+  </header>
+
+  <main class="auth-container">
+    <div class="card">
+      <h2>Login</h2>
+      <form id="loginForm">
+        <label for="loginUsername">Username</label>
+        <input id="loginUsername" name="username" type="text" required />
+
+        <label for="loginPassword">Password</label>
+        <input id="loginPassword" name="password" type="password" required />
+
+        <button type="submit" class="btn">Login</button>
+      </form>
+
+      <p>
+        Don't have an account?
+        <a href="./signup.html">Sign up</a>
+      </p>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <small>Demo app</small>
+  </footer>
+
+  <!-- Socket.IO client (global "io") -->
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
+  <!-- Config + module -->
+  <script type="module" src="./config.js"></script>
+  <script type="module" src="./js/login.js"></script>
+</body>
+</html>
