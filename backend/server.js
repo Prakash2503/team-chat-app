@@ -19,34 +19,58 @@ import { errorHandler } from "./src/middleware/errorHandler.js";
 import initSocket from "./socket.js";
 import presenceService from "./src/services/presenceService.js";
 
-// Fail fast if JWT_SECRET not set (helps catch config issues early)
+// Fail fast if JWT_SECRET not set
 if (!process.env.JWT_SECRET) {
   console.error(
-    "FATAL: JWT_SECRET is not configured. Set JWT_SECRET in your .env (or environment) before using JWT features."
+    "FATAL: JWT_SECRET is not configured. Set JWT_SECRET in your .env (or Render environment)."
   );
-  // Exit so the operator fixes the config before the server accepts requests
   process.exit(1);
 }
 
 const PORT = process.env.PORT || 5000;
-const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5500";
+
+// FRONTEND_URL from Render env
+// Example expected value: https://team-chat-app-6.onrender.com
+const FRONTEND_URL = process.env.FRONTEND_URL;
+
+// allowed origins (production + local dev)
+const allowedOrigins = [
+  FRONTEND_URL,
+  "http://localhost:5500",
+  "http://localhost:3000",
+].filter(Boolean);
+
+// dynamic CORS middleware
+const corsOptions = {
+  origin: function (origin, callback) {
+    // allow browserless tools (curl/postman)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    console.log("❌ CORS blocked origin:", origin);
+    return callback(new Error("CORS: Origin not allowed → " + origin), false);
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+};
 
 const app = express();
 const server = http.createServer(app);
 
-// Middleware
+// Core middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.use(
-  cors({
-    origin: FRONTEND_URL,
-    credentials: true,
-  })
-);
+// Apply dynamic CORS
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // Preflight fix
 
-// Connect DB (await top-level)
+// Connect DB
 try {
   await connectDB();
 } catch (err) {
@@ -54,38 +78,37 @@ try {
   process.exit(1);
 }
 
-// Basic health route
+// Health check route
 app.get("/", (req, res) => {
   res.json({ message: "Team Chat Backend is running" });
 });
 
-// Mount API routes
+// API routes
 app.use("/api/auth", authRoutes);
 app.use("/api/channels", channelRoutes);
-// mount messages router under channels so req.params.id is channelId
 app.use("/api/channels/:id/messages", messageRoutes);
 
 // Error handler (last)
 app.use(errorHandler);
 
-// Initialize Socket.IO with CORS
+// SOCKET.IO — with updated CORS
 const io = new Server(server, {
   cors: {
-    origin: FRONTEND_URL,
-    methods: ["GET", "POST"],
+    origin: allowedOrigins,
     credentials: true,
+    methods: ["GET", "POST"],
   },
 });
 
-// Attach io to the Express app so controllers can emit
+// Make io available in app
 app.set("io", io);
-
-// Attach io to presence service for automatic broadcasting
 presenceService.setIo(io);
 
-// Initialize socket handlers (auth, rooms, message persistence, presence)
+// Initialize socket handlers
 initSocket(io);
 
+// Start server
 server.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
+  console.log("Allowed CORS origins:", allowedOrigins);
 });
