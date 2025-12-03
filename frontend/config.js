@@ -2,7 +2,7 @@
 // Backend Base URL used by all API calls and socket connections.
 
 // For LOCAL DEVELOPMENT:
-export const BASE_URL = "https://team-chat-app-x9s7.onrender.com/";
+export const BASE_URL = "https://team-chat-app-x9s7.onrender.com";
 
 // ---------------------------------------------------------------
 // IMPORTANT:
@@ -12,5 +12,6 @@ export const BASE_URL = "https://team-chat-app-x9s7.onrender.com/";
 // Example:
 // export const BASE_URL = "https://teamchat-backend.onrender.com";
 // ---------------------------------------------------------------
+
 
 
